@@ -19,4 +19,4 @@ RUN mkdir -p /app/alembic/versions
 
 EXPOSE 8001
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8001}"]
+CMD ["sh", "-c", "python wait_for_db.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8001}"]
