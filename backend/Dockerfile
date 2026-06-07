@@ -19,4 +19,5 @@ RUN mkdir -p /app/alembic/versions
 
 EXPOSE 8001
 
+# Force rebuild: 2026-06-07-23
 CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8001}"]
