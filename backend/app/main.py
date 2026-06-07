@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -21,7 +22,39 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    bot_task = None
+    if settings.bot_token:
+        try:
+            from aiogram import Bot, Dispatcher
+            from aiogram.client.default import DefaultBotProperties
+            from bot.handlers import start, channels as bot_channels, orders as bot_orders, wallet as bot_wallet, callbacks as bot_callbacks
+
+            bot = Bot(token=settings.bot_token, default=DefaultBotProperties(parse_mode="HTML"))
+            dp = Dispatcher()
+            dp.include_router(bot_callbacks.router)
+            dp.include_router(bot_channels.router)
+            dp.include_router(bot_orders.router)
+            dp.include_router(bot_wallet.router)
+            dp.include_router(start.router)
+            await bot.delete_webhook(drop_pending_updates=True)
+
+            async def run_bot():
+                try:
+                    await dp.start_polling(bot)
+                except Exception as e:
+                    logger.error("Bot polling error: %s", e)
+
+            bot_task = asyncio.create_task(run_bot())
+            logger.info("Bot started in background")
+        except Exception as e:
+            logger.error("Failed to start bot: %s", e)
     yield
+    if bot_task:
+        bot_task.cancel()
+        try:
+            await bot_task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(title="Aurum Ads — Telegram Ad Exchange", lifespan=lifespan)
