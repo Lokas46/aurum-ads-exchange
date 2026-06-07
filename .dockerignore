@@ -11,3 +11,5 @@ docker-compose.yml
 *.log
 *.err
 ad_exchange.db
+backend/start.sh
+backend/wait_for_db.py

@@ -2,11 +2,9 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from pathlib import Path
-
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 
 from .config import settings
 from .routers import channels, transactions, users, webhooks, admin
@@ -72,21 +70,6 @@ app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(auth_router, prefix="/api", tags=["auth"])
-
-STATIC_DIR = Path(__file__).parent / "static"
-
-
-@app.get("/miniapp/{full_path:path}")
-async def miniapp_spa(full_path: str):
-    fp = STATIC_DIR / full_path
-    if fp.is_file():
-        return FileResponse(fp)
-    return FileResponse(STATIC_DIR / "index.html")
-
-
-@app.get("/miniapp")
-async def miniapp_index():
-    return FileResponse(STATIC_DIR / "index.html")
 
 
 @app.exception_handler(Exception)
