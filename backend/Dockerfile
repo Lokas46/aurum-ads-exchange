@@ -6,8 +6,8 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
-COPY start.sh /start.sh
+COPY start.sh .
 
 EXPOSE 8001
 
-CMD ["bash", "/start.sh"]
+CMD ["bash", "start.sh"]
