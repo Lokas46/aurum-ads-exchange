@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
 from .config import settings
-from .database import init_db
 from .routers import channels, transactions, users, webhooks, admin
 from .routers.auth import router as auth_router
 from .orders.router import router as orders_router
@@ -21,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
     bot_task = None
     if settings.bot_token:
         try:

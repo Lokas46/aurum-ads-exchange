@@ -19,5 +19,4 @@ RUN mkdir -p /app/alembic/versions
 
 EXPOSE 8001
 
-# Wait for DB then start app
-CMD ["sh", "-c", "echo '=== Starting wait_for_db ===' && python wait_for_db.py && echo '=== Starting uvicorn ===' && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8001}"]
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8001}"]
