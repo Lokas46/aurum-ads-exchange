@@ -13,6 +13,13 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8001
 
+    @field_validator("api_port", mode="before")
+    @classmethod
+    def parse_port(cls, v: Any) -> int:
+        if isinstance(v, str) and v.isdigit():
+            return int(v)
+        return v if isinstance(v, int) else 8001
+
     # Database
     database_url: str = "sqlite+aiosqlite:///./ad_exchange.db"
 
