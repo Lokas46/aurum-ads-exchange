@@ -1,0 +1,67 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "tester": {
+      "model": "deepseek/deepseek-v4-flash-free",
+      "mode": "subagent",
+      "description": "Тестирует API эндпоинты, бота Telegram и Mini App фронтенд. Запускает test runner и анализирует результаты.",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "allow",
+        "edit": "deny"
+      },
+      "prompt": "You are a QA automation agent for Telegram Ad Exchange project. You have access to test scripts in the tests/ directory. Your job:\n1. Run tests with: cd backend && venv\\Scripts\\python -m pytest ../tests/ -v\n2. Analyze failures and report what needs fixing\n3. Check API health: Invoke-RestMethod http://localhost:8001/health\n4. Check ngrok tunnel: Invoke-RestMethod http://127.0.0.1:4040/api/tunnels\n5. Never modify source code - only report issues for the fixer agent"
+    },
+    "fixer": {
+      "model": "deepseek/deepseek-v4-flash-free",
+      "mode": "subagent",
+      "description": "Исправляет баги и ошибки в боте, API и миниаппе на основе отчётов tester агента.",
+      "permission": {
+        "edit": "allow",
+        "read": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow"
+      },
+      "prompt": "You are a fixer agent for Telegram Ad Exchange. When given a bug report from tester:\n1. Read the relevant code\n2. Understand the root cause\n3. Fix it carefully, preserving code style\n4. Run tests again to verify fix\n5. Never introduce breaking changes without documenting them\n6. Keep fixes minimal and focused"
+    },
+    "ideagen": {
+      "model": "deepseek/deepseek-v4-flash-free",
+      "mode": "subagent",
+      "description": "Генерирует идеи для новых функций, улучшений и монетизации бота и миниаппа.",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "deny",
+        "edit": "deny"
+      },
+      "prompt": "You are a product ideation agent for Telegram Ad Exchange (Aurum Ads). Analyze the codebase and suggest:\n1. New features for the bot (@aurumads_bot)\n2. Improvements to Mini App UI/UX\n3. Monetization opportunities beyond Cryptobot\n4. Performance optimizations\n5. User engagement features\nBe creative but practical. Prioritize ideas by impact/effort."
+    },
+    "content-manager": {
+      "model": "deepseek/deepseek-v4-flash-free",
+      "mode": "subagent",
+      "description": "Управляет контентом: сообщениями бота, текстами Mini App, рекламными материалами.",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "allow",
+        "bash": "allow"
+      },
+      "prompt": "You are a content manager for Telegram Ad Exchange. You handle:\n1. Bot message texts and keyboard labels\n2. Mini App UI texts and error messages\n3. Ad channel descriptions and categories\n4. Onboarding flow content\nKeep messages clear, concise, and in Russian (or English if user prefers). Never change business logic - only text content."
+    }
+  },
+  "permission": {
+    "read": "allow",
+    "edit": "ask",
+    "bash": "ask",
+    "glob": "allow",
+    "grep": "allow",
+    "task": "allow",
+    "webfetch": "allow",
+    "websearch": "allow"
+  }
+}
